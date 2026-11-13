@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PortfolioCraft — Build Your Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050508;
+      --accent: #7c5cfc;
+      --accent2: #e85d9c;
+      --accent3: #00e5c4;
+      --text: #f0eeff;
+      --muted: #7a7a9a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Instrument Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+    #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 3rem;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(124,92,252,0.12);
+    }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; display: flex; align-items: center; gap: 0.5rem; }
+    .logo span { color: var(--accent); }
+    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .hero { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6rem 2rem 4rem; }
+    .badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(124,92,252,0.12); border: 1px solid rgba(124,92,252,0.35); border-radius: 999px; padding: 0.4rem 1.1rem; font-size: 0.8rem; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; margin-bottom: 2rem; animation: fadeSlideUp 0.8s ease both; }
+    .badge-dot { width: 6px; height: 6px; background: var(--accent3); border-radius: 50%; animation: pulse 1.8s infinite; }
+    h1 { font-family: 'Syne', sans-serif; font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; max-width: 14ch; animation: fadeSlideUp 0.9s 0.15s ease both; }
+    h1 .gradient-text { background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .subtitle { margin-top: 1.5rem; font-size: 1.15rem; color: var(--muted); max-width: 50ch; line-height: 1.7; animation: fadeSlideUp 1s 0.3s ease both; }
+    .hero-cta { margin-top: 3rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeSlideUp 1s 0.45s ease both; }
+    .btn-primary { position: relative; display: inline-flex; align-items: center; gap: 0.6rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; padding: 0.9rem 2.2rem; border-radius: 14px; border: none; cursor: pointer; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,92,252,0.45); }
+    .btn-ghost { display: inline-flex; align-items: center; gap: 0.6rem; color: var(--muted); font-size: 1rem; padding: 0.9rem 2rem; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-decoration: none; transition: color 0.2s, border-color 0.2s; background: transparent; font-family: 'Instrument Sans', sans-serif; }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+    .features { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; max-width: 900px; margin: 4rem auto; padding: 0 2rem; animation: fadeSlideUp 1s 0.6s ease both; }
+    .feat-card { background: rgba(14,14,24,0.6); border: 1px solid rgba(124,92,252,0.15); border-radius: 20px; padding: 1.8rem; backdrop-filter: blur(10px); transition: border-color 0.3s, transform 0.3s; }
+    .feat-card:hover { border-color: rgba(124,92,252,0.45); transform: translateY(-4px); }
+    .feat-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+    .feat-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; }
+    .feat-desc { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
+    .orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.18; pointer-events: none; z-index: 0; animation: float 8s ease-in-out infinite; }
+    .orb1 { width: 500px; height: 500px; background: var(--accent); top: -150px; left: -150px; }
+    .orb2 { width: 400px; height: 400px; background: var(--accent2); bottom: -100px; right: -100px; animation-delay: -4s; }
+    .orb3 { width: 300px; height: 300px; background: var(--accent3); top: 40%; left: 50%; animation-delay: -2s; }
+    .stats { position: relative; z-index: 1; display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap; padding: 2rem; margin-bottom: 3rem; animation: fadeSlideUp 1s 0.75s ease both; }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .cursor { display: inline-block; width: 3px; height: 0.9em; background: var(--accent2); margin-left: 4px; vertical-align: middle; animation: blink 1s step-end infinite; }
+    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    @keyframes float { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(20px, -30px); } }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  </style>
+</head>
+<body>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <canvas id="bg-canvas"></canvas>
+  <nav>
+    <div class="logo"><div class="logo-icon">✦</div>Portfolio<span>Craft</span></div>
+    <a href="/builder" class="btn-primary" style="padding:0.6rem 1.4rem;font-size:0.9rem;">Start Building →</a>
+  </nav>
+  <section class="hero">
+    <div class="badge"><span class="badge-dot"></span> AI-Powered Portfolio Builder</div>
+    <h1>Build Your<br/><span class="gradient-text" id="typed-title">Portfolio</span><span class="cursor"></span><br/>In Seconds</h1>
+    <p class="subtitle">Fill in your details and let AI craft a stunning personalized portfolio website — ready to share with the world instantly.</p>
+    <div class="hero-cta">
+      <a href="/builder" class="btn-primary">✦ Build My Portfolio</a>
+      <a href="#features" class="btn-ghost">See how it works ↓</a>
+    </div>
+  </section>
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="c1">0</div><div class="stat-label">Portfolios Built</div></div>
+    <div class="stat"><div class="stat-num" id="c2">0s</div><div class="stat-label">Seconds to Generate</div></div>
+    <div class="stat"><div class="stat-num" id="c3">0</div><div class="stat-label">Sections Crafted</div></div>
+  </div>
+  <div class="features" id="features">
+    <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">Instant Generation</div><div class="feat-desc">Fill a form, click generate. Your full portfolio is ready in seconds.</div></div>
+    <div class="feat-card"><div class="feat-icon">🎨</div><div class="feat-title">Stunning Design</div><div class="feat-desc">AI crafts beautiful dark-themed animated portfolios with glassmorphism and gradient effects.</div></div>
+    <div class="feat-card"><div class="feat-icon">📦</div><div class="feat-title">Download & Deploy</div><div class="feat-desc">Get a single HTML file — upload it anywhere. No backend required, yours forever.</div></div>
+    <div class="feat-card"><div class="feat-icon">🧠</div><div class="feat-title">Clean Templates</div><div class="feat-desc">Your details are placed into a professionally designed template with safe, escaped output.</div></div>
+  </div>
+  <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    for (let i = 0; i < 100; i++) particles.push({ x: Math.random()*1920, y: Math.random()*1080, vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3, r:Math.random()*1.5+0.5, alpha:Math.random()*0.4+0.1, hue:Math.random()>0.5?260:320 });
+    function draw() {
+      ctx.clearRect(0,0,W,H);
+      particles.forEach(p => {
+        p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=`hsla(${p.hue},80%,70%,${p.alpha})`; ctx.fill();
+      });
+      for(let i=0;i<particles.length;i++) for(let j=i+1;j<particles.length;j++){
+        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y, d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(124,92,252,${0.06*(1-d/120)})`;ctx.lineWidth=0.5;ctx.stroke();}
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+    const words=['Portfolio','Website','Brand','Story']; let wi=0,ci=0,deleting=false;
+    const el=document.getElementById('typed-title');
+    function type(){const word=words[wi];if(!deleting){el.textContent=word.slice(0,++ci);if(ci===word.length){deleting=true;setTimeout(type,1800);return;}}else{el.textContent=word.slice(0,--ci);if(ci===0){deleting=false;wi=(wi+1)%words.length;}}setTimeout(type,deleting?60:110);}
+    setTimeout(type,1200);
+    function animCount(id,target,suffix=''){const el=document.getElementById(id);let cur=0;const step=Math.ceil(target/60);const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=cur+suffix;if(cur>=target)clearInterval(t);},25);}
+    setTimeout(()=>{animCount('c1',1200,'+');animCount('c2',8,'s');animCount('c3',7,'');},800);
+  </script>
+</body>
+</html>
